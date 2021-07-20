@@ -1,10 +1,14 @@
 import { IDBClient } from "../database/client";
-import { User, UserDTO } from "../entities/user-entity";
+import { SanitizedUser, User, UserDTO } from "../entities/user-entity";
 import { AbstractRepository } from "./abstract-repository";
+
+import * as bc from "bcrypt";
 
 export interface IUserRepository {
   getUser(id: string): Promise<User>;
   createUser(user: User): Promise<User>;
+
+  loginUser(username: string, password: string): Promise<User>;
 }
 
 export class UserRepository extends AbstractRepository implements IUserRepository {
@@ -36,5 +40,22 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
     }
 
     return createdUserDTO.toEntity();
+  }
+
+  async loginUser(username: string, password: string): Promise<User> {
+    let userDTO: UserDTO;
+
+    try {
+      userDTO = await this.getEntityManager().findOne(UserDTO, { username });
+      if (!userDTO) throw new Error("invalid username");
+
+      const isValidPassword = await bc.compare(password, userDTO.hashedPassword);
+      if (isValidPassword) {
+        return userDTO.toEntity();
+      }
+      throw new Error("invalid password");
+    } catch (e) {
+      throw e;
+    }
   }
 }

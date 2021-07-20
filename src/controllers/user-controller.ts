@@ -65,6 +65,6 @@ export class UserController implements Controller {
     logger.error("error getting user response: ", e);
     message.success = false;
     message.message = e.message;
-    response.status(StatusCodes.SERVICE_UNAVAILABLE).send(message);
+    response.status(StatusCodes.BAD_REQUEST).send(message);
   }
 }

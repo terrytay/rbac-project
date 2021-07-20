@@ -1,9 +1,11 @@
 import Controller from "controller.interface";
 import App from "./app";
+import { AuthController } from "./controllers/auth-controller";
 import { HealthController } from "./controllers/health-controller";
 import { UserController } from "./controllers/user-controller";
 import { IDBClient } from "./database/client";
 import { IUserRepository, UserRepository } from "./repositories/user-repository";
+import { AuthService, IAuthService } from "./services/auth-service";
 import { IUserService, UserService } from "./services/user-service";
 
 interface IRepositories {
@@ -12,6 +14,7 @@ interface IRepositories {
 
 interface IServices {
   userService: IUserService;
+  authService: IAuthService;
 }
 
 function getRepositories(dbClient: IDBClient): IRepositories {
@@ -23,11 +26,12 @@ function getRepositories(dbClient: IDBClient): IRepositories {
 function getServices(repositories: IRepositories): IServices {
   return {
     userService: new UserService(repositories.userRepository),
+    authService: new AuthService(repositories.userRepository),
   };
 }
 
 function getControllers(services: IServices): Controller[] {
-  return [new HealthController(), new UserController(services.userService)];
+  return [new HealthController(), new UserController(services.userService), new AuthController(services.authService)];
 }
 
 // TODO: Pass in dbClient DI

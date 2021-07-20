@@ -12,6 +12,18 @@ export interface IUserInput {
   email: string;
 }
 
+export class SanitizedUser {
+  id: string;
+  username: string;
+  role: Role;
+
+  constructor(user: User) {
+    this.id = user.id;
+    this.username = user.username;
+    this.role = user.role;
+  }
+}
+
 export class User {
   id: string;
   username: string;
