@@ -7,7 +7,7 @@ export enum Role {
   ROOT = "root",
 }
 
-interface IUserInput {
+export interface IUserInput {
   id?: string;
   username: string;
   hashedPassword: string;
