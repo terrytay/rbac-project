@@ -1,6 +1,7 @@
 import Controller from "controller.interface";
 import App from "./app";
 import { HealthController } from "./controllers/health-controller";
+import { IDBClient } from "./database/client";
 
 interface IRepositories {}
 
@@ -20,7 +21,7 @@ function getControllers(services: IServices): Controller[] {
 
 // TODO: Pass in dbClient DI
 // Wire up the variable dependencies and start the app
-export function initApp(): void {
+export function initApp(dbClient: IDBClient): void {
   const repositories = getRepositories();
   const services = getServices(repositories);
   const controllers = getControllers(services);
