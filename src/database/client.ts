@@ -22,7 +22,7 @@ export class DBClient implements IDBClient {
         //__dirname + "/entity/*.js"
         config.entities,
       ],
-      synchronize: false,
+      synchronize: true,
     };
   }
 
