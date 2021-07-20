@@ -34,6 +34,7 @@ export class HealthController implements Controller {
       response.send(healthResponse);
     } catch (e) {
       HealthController.sendError(e, healthResponse, response);
+      return;
     }
   };
 

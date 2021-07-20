@@ -1,9 +1,11 @@
-import { Connection, createConnection } from "typeorm";
+import logger from "../util/logger";
+import { Connection, createConnection, EntityManager } from "typeorm";
 import { DBConfig } from "./config";
 
 export interface IDBClient {
   initialize(): Promise<void>;
   getConnection(): Connection;
+  getEntityManager(): EntityManager;
 }
 
 export class DBClient implements IDBClient {
@@ -22,8 +24,9 @@ export class DBClient implements IDBClient {
         //__dirname + "/entity/*.js"
         config.entities,
       ],
-      synchronize: true,
+      synchronize: process.env.NODE_ENV === "production" ? false : true,
     };
+    logger.info(`DB Synchronize set to: ${this.connectionConfig.synchronize}`);
   }
 
   public async initialize(): Promise<void> {
@@ -48,5 +51,9 @@ export class DBClient implements IDBClient {
 
   public getConnection(): Connection {
     return this.connection;
+  }
+
+  public getEntityManager(): EntityManager {
+    return this.getConnection().manager;
   }
 }

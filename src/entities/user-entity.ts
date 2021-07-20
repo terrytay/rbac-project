@@ -1,5 +1,4 @@
-import { nanoid } from "nanoid";
-import { Column, PrimaryColumn, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 export enum Role {
   USER = "user",
@@ -8,12 +7,9 @@ export enum Role {
 }
 
 export interface IUserInput {
-  id?: string;
   username: string;
-  hashedPassword: string;
+  password: string;
   email: string;
-  role: Role;
-  createdAt?: Date;
 }
 
 export class User {
@@ -24,28 +20,20 @@ export class User {
   role: Role;
   createdAt: Date;
 
-  constructor(userInput: IUserInput) {
-    this.id = userInput.id;
-    this.username = userInput.username;
-    this.hashedPassword = userInput.hashedPassword;
-    this.email = userInput.email;
-    this.role = userInput.role;
-    this.createdAt = userInput.createdAt;
-
-    if (!userInput.id || userInput.id === null) {
-      this.id = nanoid();
-    }
-
-    if (!userInput.createdAt || userInput.createdAt === null) {
-      this.createdAt = new Date(Date.now());
-    }
+  constructor(username: string, hashedPassword: string, email: string, role: Role, createdAt: Date, id: string) {
+    this.id = id;
+    this.username = username;
+    this.hashedPassword = hashedPassword;
+    this.email = email;
+    this.role = role;
+    this.createdAt = createdAt;
   }
 
-  public toDTO() {
+  public toDTO(): UserDTO {
     return new UserDTO(this.id, this.createdAt, this.username, this.email, this.hashedPassword, this.role);
   }
 }
-
+@Entity("users")
 export class UserDTO {
   @PrimaryColumn()
   id: string;
@@ -75,13 +63,6 @@ export class UserDTO {
   }
 
   public toEntity(): User {
-    return new User({
-      id: this.id,
-      createdAt: this.createdAt,
-      username: this.username,
-      email: this.username,
-      hashedPassword: this.hashedPassword,
-      role: this.role,
-    });
+    return new User(this.username, this.hashedPassword, this.email, this.role, this.createdAt, this.id);
   }
 }
