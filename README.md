@@ -14,7 +14,7 @@ To test the application in development mode:
 
 You need to have a running postgresql db.
 
-1. Create a .env.dev file in /config with the following data:
+1. Create a folder 'config' in the root, then create '.env.dev' file in /config with the following data:
    ```js
    DB_DBTYPE = postgres;
    DB_HOST = yourhostaddress;
