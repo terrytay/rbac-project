@@ -15,6 +15,12 @@ export default class App {
     this.app.get("/", (request: Request, response: Response, next: NextFunction) => {
       return response.sendStatus(StatusCodes.OK);
     });
+
+    // Initialize middlewares
+    this.initializeMiddlewares();
+
+    // Initialize controllers
+    this.initializeControllers(controllers);
   }
 
   public start(port: string) {
@@ -26,7 +32,6 @@ export default class App {
 
   // Initialization of middlware goes here
   public initializeMiddlewares() {
-    this.app.use(bp.urlencoded());
     this.app.use(bp.json({ strict: true }));
 
     // custom middleware to log accessed routes with response times and response codes

@@ -1,5 +1,6 @@
 import Controller from "controller.interface";
 import App from "./app";
+import { HealthController } from "./controllers/health-controller";
 
 interface IRepositories {}
 
@@ -14,7 +15,7 @@ function getServices(repositories: IRepositories): IServices {
 }
 
 function getControllers(services: IServices): Controller[] {
-  return [];
+  return [new HealthController()];
 }
 
 // TODO: Pass in dbClient DI
