@@ -1,10 +1,10 @@
 import express, { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import bp from "body-parser";
-
 import Controller from "controller.interface";
 import logger from "./util/logger";
 import { loggingMiddleware } from "./middleware/logging";
+import errorHandler from "errorhandler";
 
 export default class App {
   private app: express.Application;
@@ -36,6 +36,10 @@ export default class App {
 
     // custom middleware to log accessed routes with response times and response codes
     this.app.use(loggingMiddleware);
+
+    if (process.env.NODE_ENV !== "production") {
+      this.app.use(errorHandler());
+    }
   }
 
   private initializeControllers(controllers: Controller[]) {

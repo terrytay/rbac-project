@@ -7,7 +7,7 @@ import logger from "../util/logger";
 import { IAuthService } from "../services/auth-service";
 import { generateToken } from "../util/jwt";
 
-class AuthResponse implements GenericResponse {
+export class AuthResponse implements GenericResponse {
   success: boolean;
   message: string;
   data: { user: SanitizedUser; accessToken: string };

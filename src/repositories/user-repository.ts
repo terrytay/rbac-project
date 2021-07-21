@@ -4,6 +4,12 @@ import { AbstractRepository } from "./abstract-repository";
 
 import * as bc from "bcrypt";
 
+import { RecordNotFoundError } from "../error-handlers/base";
+import { UnableToCreateError } from "../error-handlers/base";
+import { PasswordMismatchError } from "../error-handlers/base";
+
+import { getProcessedError } from "./util";
+
 export interface IUserRepository {
   getUser(id: string): Promise<User>;
   createUser(user: User): Promise<User>;
@@ -23,7 +29,7 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
       const userDTO = await this.getEntityManager().findOne(UserDTO, { id: id });
       user = userDTO.toEntity();
     } catch (e) {
-      throw new Error("server error");
+      throw new RecordNotFoundError("user not found in db", e);
     }
 
     return user;
@@ -36,7 +42,7 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
       userDTO = user.toDTO();
       createdUserDTO = await this.getEntityManager().save(UserDTO, userDTO);
     } catch (e) {
-      throw new Error("server error");
+      throw new UnableToCreateError("user not created", e);
     }
 
     return createdUserDTO.toEntity();
@@ -47,15 +53,15 @@ export class UserRepository extends AbstractRepository implements IUserRepositor
 
     try {
       userDTO = await this.getEntityManager().findOne(UserDTO, { username });
-      if (!userDTO) throw new Error("invalid username");
+      if (!userDTO) throw new RecordNotFoundError("username invalid");
 
       const isValidPassword = await bc.compare(password, userDTO.hashedPassword);
       if (isValidPassword) {
         return userDTO.toEntity();
       }
-      throw new Error("invalid password");
+      throw new PasswordMismatchError("password invalid");
     } catch (e) {
-      throw e;
+      throw getProcessedError(e);
     }
   }
 }

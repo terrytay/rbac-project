@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 import fs from "fs";
 
 import { SanitizedUser } from "../entities/user-entity";
+import { AuthResponse } from "../controllers/auth-controller";
+import logger from "../util/logger";
 
 const privateKey = fs.readFileSync("jwtRS256.key");
 
@@ -15,7 +17,7 @@ export const verifyToken = (request: Request, response: Response, next: NextFunc
     const authorizationHeader = request.header("Authorization");
     accessToken = authorizationHeader.split(" ")[1];
   } catch (e) {
-    response.sendStatus(StatusCodes.EXPECTATION_FAILED);
+    sendError(new Error("missing bearer token"), response, StatusCodes.EXPECTATION_FAILED);
     return;
   }
 
@@ -25,7 +27,7 @@ export const verifyToken = (request: Request, response: Response, next: NextFunc
     { algorithms: ["RS256"] },
     function (err: Error, decoded: { user: SanitizedUser }) {
       if (err) {
-        response.sendStatus(StatusCodes.UNAUTHORIZED);
+        sendError(err, response, StatusCodes.UNAUTHORIZED);
         return;
       }
 
@@ -33,3 +35,10 @@ export const verifyToken = (request: Request, response: Response, next: NextFunc
     }
   );
 };
+
+function sendError(e: Error, response: Response, statusCode: StatusCodes) {
+  const authResponse = new AuthResponse(false, null);
+  authResponse.success = false;
+  authResponse.message = e.message;
+  response.status(statusCode).send(authResponse);
+}

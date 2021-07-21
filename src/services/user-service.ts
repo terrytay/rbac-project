@@ -3,6 +3,7 @@ import { IUserRepository } from "../repositories/user-repository";
 
 import * as bc from "bcrypt";
 import { nanoid } from "nanoid";
+import { MissingParamsError } from "../error-handlers/base";
 
 export interface IUserService {
   getUser(id: string): Promise<User>;
@@ -18,7 +19,7 @@ export class UserService implements IUserService {
 
   async getUser(id: string): Promise<User> {
     try {
-      return this.userRepository.getUser(id);
+      return await this.userRepository.getUser(id);
     } catch (e) {
       throw e;
     }
@@ -29,7 +30,7 @@ export class UserService implements IUserService {
 
     try {
       const { username, password, email } = userInput;
-      if (!username || !password || !email) throw new Error("username/password/email empty");
+      if (!username || !password || !email) throw new MissingParamsError("username/password/email empty");
 
       const hashedPassword = await bc.hash(password, 10);
 
