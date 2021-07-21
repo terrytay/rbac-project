@@ -5,16 +5,17 @@ import { IUserService } from "../services/user-service";
 import { SanitizedUser, User } from "../entities/user-entity";
 import logger from "../util/logger";
 import { IAuthService } from "../services/auth-service";
+import { generateToken } from "../util/jwt";
 
 class AuthResponse implements GenericResponse {
   success: boolean;
   message: string;
-  data: SanitizedUser;
+  data: { user: SanitizedUser; accessToken: string };
 
-  constructor(success: boolean, message: string, user: SanitizedUser) {
+  constructor(success: boolean, message: string) {
     this.success = success;
     this.message = message;
-    this.data = user;
+    this.data = { user: null, accessToken: null };
   }
 }
 
@@ -35,12 +36,16 @@ export class AuthController implements Controller {
   }
 
   private post = async (request: Request, response: Response, next: NextFunction) => {
-    let authResponse = new AuthResponse(true, "OK", null);
+    let authResponse = new AuthResponse(true, "OK");
 
     try {
       let { username, password } = request.body;
       const user = await this.authService.login(username, password);
-      authResponse.data = user;
+      authResponse.data.user = user;
+
+      const token = await generateToken({ user });
+      authResponse.data.accessToken = token;
+
       response.send(authResponse);
     } catch (e) {
       AuthController.sendError(e, authResponse, response);

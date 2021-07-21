@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { IUserService } from "../services/user-service";
 import { User } from "../entities/user-entity";
 import logger from "../util/logger";
+import { verifyToken } from "../middleware/auth";
 
 class UserResponse implements GenericResponse {
   success: boolean;
@@ -30,7 +31,7 @@ export class UserController implements Controller {
   }
 
   public initializeRoutes() {
-    this.router.get(`${this.path}/:id`, this.get);
+    this.router.get(`${this.path}/:id`, verifyToken, this.get);
     this.router.post(`${this.path}`, this.post);
   }
 

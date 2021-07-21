@@ -16,7 +16,7 @@ export default class App {
       return response.sendStatus(StatusCodes.OK);
     });
 
-    // Initialize middlewares
+    // Initialize global middlewares
     this.initializeMiddlewares();
 
     // Initialize controllers
@@ -30,7 +30,7 @@ export default class App {
     });
   }
 
-  // Initialization of middlware goes here
+  // Initialization of global middlware goes here
   public initializeMiddlewares() {
     this.app.use(bp.json({ strict: true }));
 

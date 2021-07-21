@@ -39,3 +39,6 @@ dist/**/*
 
 # ignore yarn.lock
 yarn.lock
+
+jwtRS256.key
+jwtRS256.key.pub
